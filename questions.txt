@@ -1,0 +1,91 @@
+###
+TEXT
+The quick brown fox jumps over the lazy dog. Every morning it runs through the forest looking for food.
+
+Q
+What does the fox do every morning?
+
+OPTS
+A) Sleeps in a den
+B) Runs through the forest
+C) Hunts in the mountains
+D) Swims in the lake
+
+ANS
+B
+###
+TEXT
+Maria bought three apples and two oranges at the market. She paid with a ten dollar bill and received two dollars in change.
+
+Q
+How much did Maria's fruits cost?
+
+OPTS
+A) Five dollars
+B) Eight dollars
+C) Ten dollars
+D) Twelve dollars
+
+ANS
+B
+###
+TEXT
+The old clock in the town square chimes twelve times at noon. Children gather there to eat lunch and play before school resumes at one o clock.
+
+Q
+When does school resume according to the passage?
+
+OPTS
+A) At noon
+B) At twelve thirty
+C) At one o'clock
+D) After lunch
+
+ANS
+C
+###
+TEXT
+Scientists discovered that bees can recognize human faces. They trained bees to associate pictures of faces with sweet rewards and found the insects could remember them for days.
+
+Q
+What did scientists train bees to associate with faces?
+
+OPTS
+A) Colors
+B) Sweet rewards
+C) Other bees
+D) Flowers
+
+ANS
+B
+###
+TEXT
+The library closes at nine PM on weekdays but stays open until midnight on Fridays. Students often study there during exam week because it has free wifi and quiet study rooms.
+
+Q
+Until what time does the library stay open on Fridays?
+
+OPTS
+A) Nine PM
+B) Ten PM
+C) Midnight
+D) One AM
+
+ANS
+C
+###
+TEXT
+Tom's grandmother gave him a wooden toy train for his birthday. She had painted each carriage a different color: red, blue, green, and yellow. Tom played with it every day in his room.
+
+Q
+How many carriages did the toy train have?
+
+OPTS
+A) Two
+B) Three
+C) Four
+D) Five
+
+ANS
+C
+###
