@@ -262,7 +262,10 @@ class Experiment:
         correct_count = sum(1 for r in self.results if r["correct"])
         print(f"\nScore: {correct_count}/{len(self.results)} correct")
 
-def run_experiment():
+
+
+
+if __name__ == "__main__":
     pygame.init()
     questions = load_questions(CONFIG["questions_file"])
     experiment = Experiment(
@@ -272,7 +275,3 @@ def run_experiment():
         config=CONFIG,
     )
     experiment.run()
-
-
-if __name__ == "__main__":
-    run_experiment()
