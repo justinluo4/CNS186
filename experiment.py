@@ -6,6 +6,7 @@ to select answers.
 """
 
 import pygame
+
 import random
 from dataclasses import dataclass
 from pathlib import Path
@@ -111,168 +112,166 @@ def load_questions(filepath: str) -> list[QuestionItem]:
 
     return items
 
-
-# ============== Experiment logic ==============
-def sample_trials(questions: list[QuestionItem], n: int, wpm_min: int, wpm_max: int) -> list[Trial]:
-    """Sample n unique questions, each paired with a random WPM."""
-    if len(questions) < n:
-        raise ValueError(f"Need at least {n} questions, found {len(questions)}")
-
-    selected = random.sample(questions, n)
-    wpm_values = [random.randint(wpm_min, wpm_max) for _ in range(n)]
-    return [Trial(q, w) for q, w in zip(selected, wpm_values)]
-
-
 def word_count(text: str) -> int:
     return len(text.split())
 
+class Experiment:
+    def __init__(self, questions: list[QuestionItem], n_trials: int, wpm_range: tuple[int, int], config: dict):
+        self.questions = questions
+        self.n_trials = n_trials
+        self.wpm_range = wpm_range
+        self.trials = self.sample_trials()
+        self.config = config
+        self.font_text = pygame.font.SysFont("Arial", config["font_size_text"])
+        self.font_question = pygame.font.SysFont("Arial", config["font_size_question"])
+        self.font_options = pygame.font.SysFont("Arial", config["font_size_options"])
+        self.screen = pygame.display.set_mode((config["screen_width"], config["screen_height"]))
+        pygame.display.set_caption("Reading Speed Experiment")
+        self.clock = pygame.time.Clock()
+        self.results: list[dict] = []
+        self.trial_idx = 0
+        self.state = "ready"  # "ready" | "showing_text" | "showing_question"
+        self.text_start_time = 0
+        self.option_rects: list[tuple[pygame.Rect, str]] = []  # (rect, answer_letter)
 
-def ms_per_word_for_trial(wpm: int) -> float:
-    """Milliseconds each word is displayed. Uses CONFIG override if set."""
-    if CONFIG["ms_between_words"] is not None:
-        return CONFIG["ms_between_words"]
-    return 60000.0 / wpm if wpm > 0 else 0
+    def sample_trials(self) -> list[Trial]:
+        return [Trial(q, w) for q, w in zip(random.sample(self.questions, self.n_trials), random.sample(range(self.wpm_range[0], self.wpm_range[1]), self.n_trials))]
 
 
-# ============== Rendering helpers ==============
-def draw_centered_word(surf: pygame.Surface, font: pygame.font.Font, word: str):
-    """Draw a single word centered on screen."""
-    s = font.render(word, True, CONFIG["text_color"])
-    x = (surf.get_width() - s.get_width()) // 2
-    y = (surf.get_height() - s.get_height()) // 2
-    surf.blit(s, (x, y))
 
 
-# ============== Experiment runner ==============
-def run_experiment():
-    pygame.init()
-    screen = pygame.display.set_mode((CONFIG["screen_width"], CONFIG["screen_height"]))
-    pygame.display.set_caption("Reading Speed Experiment")
-    clock = pygame.time.Clock()
 
-    font_text = pygame.font.SysFont("Arial", CONFIG["font_size_text"])
-    font_question = pygame.font.SysFont("Arial", CONFIG["font_size_question"])
-    font_options = pygame.font.SysFont("Arial", CONFIG["font_size_options"])
+    def ms_per_word_for_trial(self, wpm: int) -> float:
+        """Milliseconds each word is displayed. Uses CONFIG override if set."""
+        if self.config.get("ms_between_words") is not None:
+            return self.config["ms_between_words"]
+        return 60000.0 / wpm if wpm > 0 else 0
 
-    questions = load_questions(CONFIG["questions_file"])
-    trials = sample_trials(
-        questions,
-        CONFIG["n_trials"],
-        CONFIG["wpm_range"][0],
-        CONFIG["wpm_range"][1],
-    )
+    def draw_centered_word(self, surf: pygame.Surface, font: pygame.font.Font, word: str):
+        """Draw a single word centered on screen."""
+        s = font.render(word, True, self.config["text_color"])
+        x = (surf.get_width() - s.get_width()) // 2
+        y = (surf.get_height() - s.get_height()) // 2
+        surf.blit(s, (x, y))
 
-    results: list[dict] = []
-    trial_idx = 0
-    state = "ready"  # "ready" | "showing_text" | "showing_question"
-    text_start_time = 0
-    option_rects: list[tuple[pygame.Rect, str]] = []  # (rect, answer_letter)
+    def run(self):
+        """Run the experiment main loop."""
+        running = True
+        while running and self.trial_idx < len(self.trials):
+            trial = self.trials[self.trial_idx]
+            dt = self.clock.tick(60) / 1000.0
 
-    running = True
-    while running and trial_idx < len(trials):
-        trial = trials[trial_idx]
-        dt = clock.tick(60) / 1000.0
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                break
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     running = False
                     break
-                if state == "ready" and event.key == pygame.K_SPACE:
-                    state = "showing_text"
-                    text_start_time = pygame.time.get_ticks() / 1000.0
 
-            if event.type == pygame.MOUSEBUTTONDOWN and state == "showing_question":
-                pos = event.pos
-                for rect, letter in option_rects:
-                    if rect.collidepoint(pos):
-                        correct = letter == trial.question_item.correct_answer
-                        results.append({
-                            "trial": trial_idx + 1,
-                            "wpm": trial.wpm,
-                            "correct": correct,
-                            "question": trial.question_item.question[:50],
-                        })
-                        trial_idx += 1
-                        state = "ready"
-                        option_rects = []
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
                         break
+                    if self.state == "ready" and event.key == pygame.K_SPACE:
+                        self.state = "showing_text"
+                        self.text_start_time = pygame.time.get_ticks() / 1000.0
 
-        screen.fill(CONFIG["bg_color"])
+                if event.type == pygame.MOUSEBUTTONDOWN and self.state == "showing_question":
+                    pos = event.pos
+                    for rect, letter in self.option_rects:
+                        if rect.collidepoint(pos):
+                            correct = letter == trial.question_item.correct_answer
+                            self.results.append({
+                                "trial": self.trial_idx + 1,
+                                "wpm": trial.wpm,
+                                "correct": correct,
+                                "question": trial.question_item.question[:50],
+                            })
+                            self.trial_idx += 1
+                            self.state = "ready"
+                            self.option_rects = []
+                            break
 
-        if state == "ready":
-            ms = ms_per_word_for_trial(trial.wpm)
-            prompt = f"Trial {trial_idx + 1} of {len(trials)}  —  {int(ms)} ms/word"
-            prompt_surf = font_question.render(prompt, True, CONFIG["accent_color"])
-            screen.blit(
-                prompt_surf,
-                (screen.get_width() // 2 - prompt_surf.get_width() // 2, 80),
-            )
-            instruct = "Press SPACE to begin"
-            inst_surf = font_text.render(instruct, True, CONFIG["text_color"])
-            screen.blit(
-                inst_surf,
-                (screen.get_width() // 2 - inst_surf.get_width() // 2, 300),
-            )
+            self.screen.fill(self.config["bg_color"])
 
-        elif state == "showing_text":
-            elapsed_ms = (pygame.time.get_ticks() / 1000.0 - text_start_time) * 1000
-            word_ms = ms_per_word_for_trial(trial.wpm)
-            words = trial.question_item.text.split()
-            total_duration_ms = len(words) * word_ms
+            if self.state == "ready":
+                ms = self.ms_per_word_for_trial(trial.wpm)
+                prompt = f"Trial {self.trial_idx + 1} of {len(self.trials)}  —  {int(ms)} ms/word"
+                prompt_surf = self.font_question.render(prompt, True, self.config["accent_color"])
+                self.screen.blit(
+                    prompt_surf,
+                    (self.screen.get_width() // 2 - prompt_surf.get_width() // 2, 80),
+                )
+                instruct = "Press SPACE to begin"
+                inst_surf = self.font_text.render(instruct, True, self.config["text_color"])
+                self.screen.blit(
+                    inst_surf,
+                    (self.screen.get_width() // 2 - inst_surf.get_width() // 2, 300),
+                )
 
-            if elapsed_ms < total_duration_ms:
-                word_idx = int(elapsed_ms / word_ms)
-                if word_idx < len(words):
-                    draw_centered_word(screen, font_text, words[word_idx])
-            else:
-                # Brief blank before question
-                state = "showing_question"
-                option_rects = []
-                screen.fill(CONFIG["bg_color"])
-                pygame.display.flip()
-                pygame.time.delay(CONFIG["inter_trial_blank_ms"])
+            elif self.state == "showing_text":
+                elapsed_ms = (pygame.time.get_ticks() / 1000.0 - self.text_start_time) * 1000
+                word_ms = self.ms_per_word_for_trial(trial.wpm)
+                words = trial.question_item.text.split()
+                total_duration_ms = len(words) * word_ms
 
-        elif state == "showing_question":
-            q = trial.question_item
-            q_surf = font_question.render(q.question, True, CONFIG["text_color"])
-            screen.blit(q_surf, (50, 80))
+                if elapsed_ms < total_duration_ms:
+                    word_idx = int(elapsed_ms / word_ms)
+                    if word_idx < len(words):
+                        self.draw_centered_word(self.screen, self.font_text, words[word_idx])
+                else:
+                    # Brief blank before question
+                    self.state = "showing_question"
+                    self.option_rects = []
+                    self.screen.fill(self.config["bg_color"])
+                    pygame.display.flip()
+                    pygame.time.delay(self.config["inter_trial_blank_ms"])
 
-            option_rects = []
-            y = 180
-            for opt in q.options:
-                letter = opt[0].upper() if opt else ""
-                opt_surf = font_options.render(opt, True, CONFIG["text_color"])
-                pad = CONFIG["option_padding"]
-                w = max(400, opt_surf.get_width() + pad * 2)
-                h = opt_surf.get_height() + pad * 2
-                x = (screen.get_width() - w) // 2
-                rect = pygame.Rect(x, y, w, h)
+            elif self.state == "showing_question":
+                q = trial.question_item
+                q_surf = self.font_question.render(q.question, True, self.config["text_color"])
+                self.screen.blit(q_surf, (50, 80))
 
-                # Draw option box
-                pygame.draw.rect(screen, (50, 55, 60), rect, border_radius=8)
-                pygame.draw.rect(screen, CONFIG["accent_color"], rect, 1, border_radius=8)
-                screen.blit(opt_surf, (x + pad, y + pad))
+                self.option_rects = []
+                y = 180
+                for opt in q.options:
+                    letter = opt[0].upper() if opt else ""
+                    opt_surf = self.font_options.render(opt, True, self.config["text_color"])
+                    pad = self.config["option_padding"]
+                    w = max(400, opt_surf.get_width() + pad * 2)
+                    h = opt_surf.get_height() + pad * 2
+                    x = (self.screen.get_width() - w) // 2
+                    rect = pygame.Rect(x, y, w, h)
 
-                option_rects.append((rect, letter))
-                y += h + 10
+                    # Draw option box
+                    pygame.draw.rect(self.screen, (50, 55, 60), rect, border_radius=8)
+                    pygame.draw.rect(self.screen, self.config["accent_color"], rect, 1, border_radius=8)
+                    self.screen.blit(opt_surf, (x + pad, y + pad))
 
-        pygame.display.flip()
+                    self.option_rects.append((rect, letter))
+                    y += h + 10
 
-    pygame.quit()
+            pygame.display.flip()
 
-    # Print results
-    print("\n=== Results ===")
-    for r in results:
-        status = "OK" if r["correct"] else "X"
-        ms = 60000 // r["wpm"] if r["wpm"] > 0 else 0
-        print(f"Trial {r['trial']}: {r['wpm']} WPM ({ms} ms/word) — {status}")
-    correct_count = sum(1 for r in results if r["correct"])
-    print(f"\nScore: {correct_count}/{len(results)} correct")
+        pygame.quit()
+
+        # Print results
+        print("\n=== Results ===")
+        for r in self.results:
+            status = "OK" if r["correct"] else "X"
+            ms = 60000 // r["wpm"] if r["wpm"] > 0 else 0
+            print(f"Trial {r['trial']}: {r['wpm']} WPM ({ms} ms/word) — {status}")
+        correct_count = sum(1 for r in self.results if r["correct"])
+        print(f"\nScore: {correct_count}/{len(self.results)} correct")
+
+def run_experiment():
+    pygame.init()
+    questions = load_questions(CONFIG["questions_file"])
+    experiment = Experiment(
+        questions=questions,
+        n_trials=CONFIG["n_trials"],
+        wpm_range=CONFIG["wpm_range"],
+        config=CONFIG,
+    )
+    experiment.run()
 
 
 if __name__ == "__main__":
