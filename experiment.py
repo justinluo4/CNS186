@@ -3,21 +3,29 @@ Reading speed experiment: measures maximum comprehensible reading speed
 for different text presentations. Text is flashed at a given WPM, then
 a comprehension question appears. Use SPACE to begin each trial, mouse
 to select answers.
+
+Logging:
+- Saves everything needed to replicate each trial (text, question, options, correct, wpm, ms/word, etc.)
+- Saves reaction time (RT) from when the question is FIRST rendered to click.
+- Saves experiment config + RNG seed so the exact trial sequence can be reproduced.
 """
 
-import pygame
-
-import random
+import json
+import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+import random
+
+import pygame
 
 
 # ============== Configuration ==============
 CONFIG = {
     "questions_file": "questions.txt",
     "n_trials": 6,
-    "wpm_range": (150, 600),  # min and max WPM to sample
-    "ms_between_words": None,  # ms each word is shown; None = derive from trial WPM (60000/wpm)
+    "wpm_range": (150, 600),  # min and max WPM to sample (upper bound exclusive)
+    "ms_between_words": None,  # override ms/word; None => 60000/wpm
     "screen_width": 900,
     "screen_height": 700,
     "bg_color": (30, 30, 35),
@@ -29,6 +37,9 @@ CONFIG = {
     "line_spacing": 1.4,
     "option_padding": 12,
     "inter_trial_blank_ms": 500,
+    # logging + reproducibility
+    "log_dir": "logs",
+    "rng_seed": None,  # set to an int to reproduce exactly; None => auto-generate and log it
 }
 
 
@@ -37,14 +48,15 @@ CONFIG = {
 class QuestionItem:
     text: str
     question: str
-    options: list[str]  # ["A) ...", "B) ...", ...]
-    correct_answer: str  # "A", "B", "C", or "D"
+    options: list[str]         # ["A) ...", "B) ...", ...]
+    correct_answer: str        # "A", "B", "C", or "D"
 
 
 @dataclass
 class Trial:
     question_item: QuestionItem
     wpm: int
+    # experiment_type: str  # add later if you want; will auto-log if included
 
 
 # ============== Parser ==============
@@ -112,40 +124,57 @@ def load_questions(filepath: str) -> list[QuestionItem]:
 
     return items
 
-def word_count(text: str) -> int:
-    return len(text.split())
 
 class Experiment:
     def __init__(self, questions: list[QuestionItem], n_trials: int, wpm_range: tuple[int, int], config: dict):
         self.questions = questions
         self.n_trials = n_trials
         self.wpm_range = wpm_range
-        self.trials = self.sample_trials()
         self.config = config
+
+        # reproducible RNG for trial sampling
+        self.seed = self.config.get("rng_seed")
+        if self.seed is None:
+            self.seed = random.randrange(0, 2**32)
+        self.rng = random.Random(self.seed)
+
+        self.trials = self.sample_trials()
+
         self.font_text = pygame.font.SysFont("Arial", config["font_size_text"])
         self.font_question = pygame.font.SysFont("Arial", config["font_size_question"])
         self.font_options = pygame.font.SysFont("Arial", config["font_size_options"])
+
         self.screen = pygame.display.set_mode((config["screen_width"], config["screen_height"]))
         pygame.display.set_caption("Reading Speed Experiment")
         self.clock = pygame.time.Clock()
+
         self.results: list[dict] = []
         self.trial_idx = 0
         self.state = "ready"  # "ready" | "showing_text" | "showing_question"
-        self.text_start_time = 0
+
+        self.text_start_time_s = 0.0
         self.option_rects: list[tuple[pygame.Rect, str]] = []  # (rect, answer_letter)
 
+        # Reaction time: question onset (first render time)
+        self.question_start_time_s: float | None = None
+
+        # Logging
+        self.log_path = self._init_logfile()
+
     def sample_trials(self) -> list[Trial]:
-        return [Trial(q, w) for q, w in zip(random.sample(self.questions, self.n_trials), random.sample(range(self.wpm_range[0], self.wpm_range[1]), self.n_trials))]
+        if self.n_trials > len(self.questions):
+            raise ValueError(f"n_trials={self.n_trials} exceeds available questions={len(self.questions)}")
 
-
-
-
+        chosen_questions = self.rng.sample(self.questions, self.n_trials)
+        # upper bound exclusive by Python range; if you want inclusive max, use (max+1)
+        chosen_wpms = self.rng.sample(range(self.wpm_range[0], self.wpm_range[1]), self.n_trials)
+        return [Trial(q, w) for q, w in zip(chosen_questions, chosen_wpms)]
 
     def ms_per_word_for_trial(self, wpm: int) -> float:
         """Milliseconds each word is displayed. Uses CONFIG override if set."""
         if self.config.get("ms_between_words") is not None:
-            return self.config["ms_between_words"]
-        return 60000.0 / wpm if wpm > 0 else 0
+            return float(self.config["ms_between_words"])
+        return 60000.0 / wpm if wpm > 0 else 0.0
 
     def draw_centered_word(self, surf: pygame.Surface, font: pygame.font.Font, word: str):
         """Draw a single word centered on screen."""
@@ -154,12 +183,35 @@ class Experiment:
         y = (surf.get_height() - s.get_height()) // 2
         surf.blit(s, (x, y))
 
+    # ---------- logging helpers ----------
+    def _init_logfile(self) -> Path:
+        log_dir = Path(self.config.get("log_dir", "logs"))
+        log_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = log_dir / f"reading_speed_{ts}.jsonl"
+
+        header = {
+            "record_type": "experiment_header",
+            "timestamp": datetime.now().isoformat(),
+            "seed": self.seed,
+            "config": self.config,
+            "n_trials": self.n_trials,
+            "wpm_range": self.wpm_range,
+            "pygame_version": pygame.version.ver,
+        }
+        path.write_text(json.dumps(header, ensure_ascii=False) + "\n", encoding="utf-8")
+        return path
+
+    def _log(self, record: dict):
+        with self.log_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    # ---------- main loop ----------
     def run(self):
-        """Run the experiment main loop."""
         running = True
         while running and self.trial_idx < len(self.trials):
             trial = self.trials[self.trial_idx]
-            dt = self.clock.tick(60) / 1000.0
+            self.clock.tick(60)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -172,24 +224,69 @@ class Experiment:
                         break
                     if self.state == "ready" and event.key == pygame.K_SPACE:
                         self.state = "showing_text"
-                        self.text_start_time = pygame.time.get_ticks() / 1000.0
+                        self.text_start_time_s = pygame.time.get_ticks() / 1000.0
+                        self.question_start_time_s = None  # reset for this trial
+
+                        # log trial start (replication-critical)
+                        words = trial.question_item.text.split()
+                        word_ms = self.ms_per_word_for_trial(trial.wpm)
+                        self._log({
+                            "record_type": "trial_start",
+                            "timestamp": datetime.now().isoformat(),
+                            "trial_index": self.trial_idx,
+                            "trial_number": self.trial_idx + 1,
+                            "wpm": trial.wpm,
+                            "ms_per_word": word_ms,
+                            "num_words": len(words),
+                            "planned_text_duration_ms": len(words) * word_ms,
+                            "text": trial.question_item.text,
+                            "question": trial.question_item.question,
+                            "options": trial.question_item.options,
+                            "correct_answer": trial.question_item.correct_answer,
+                        })
 
                 if event.type == pygame.MOUSEBUTTONDOWN and self.state == "showing_question":
                     pos = event.pos
                     for rect, letter in self.option_rects:
                         if rect.collidepoint(pos):
+                            click_time_s = pygame.time.get_ticks() / 1000.0
+                            # question_start_time_s is set when question is first rendered
+                            rt_ms = None
+                            if self.question_start_time_s is not None:
+                                rt_ms = (click_time_s - self.question_start_time_s) * 1000.0
+
                             correct = letter == trial.question_item.correct_answer
-                            self.results.append({
+
+                            trial_record = {
                                 "trial": self.trial_idx + 1,
+                                "trial_index": self.trial_idx,
                                 "wpm": trial.wpm,
+                                "ms_per_word": self.ms_per_word_for_trial(trial.wpm),
+                                "num_words": len(trial.question_item.text.split()),
+                                "text": trial.question_item.text,
+                                "question": trial.question_item.question,
+                                "options": trial.question_item.options,
+                                "correct_answer": trial.question_item.correct_answer,
+                                "chosen_answer": letter,
                                 "correct": correct,
-                                "question": trial.question_item.question[:50],
+                                "rt_ms": rt_ms,
+                            }
+                            self.results.append(trial_record)
+
+                            # log response
+                            self._log({
+                                "record_type": "trial_response",
+                                "timestamp": datetime.now().isoformat(),
+                                **trial_record,
                             })
+
                             self.trial_idx += 1
                             self.state = "ready"
                             self.option_rects = []
+                            self.question_start_time_s = None
                             break
 
+            # ----- draw -----
             self.screen.fill(self.config["bg_color"])
 
             if self.state == "ready":
@@ -200,32 +297,44 @@ class Experiment:
                     prompt_surf,
                     (self.screen.get_width() // 2 - prompt_surf.get_width() // 2, 80),
                 )
-                instruct = "Press SPACE to begin"
-                inst_surf = self.font_text.render(instruct, True, self.config["text_color"])
+                inst = "Press SPACE to begin"
+                inst_surf = self.font_text.render(inst, True, self.config["text_color"])
                 self.screen.blit(
                     inst_surf,
                     (self.screen.get_width() // 2 - inst_surf.get_width() // 2, 300),
                 )
 
             elif self.state == "showing_text":
-                elapsed_ms = (pygame.time.get_ticks() / 1000.0 - self.text_start_time) * 1000
+                elapsed_ms = (pygame.time.get_ticks() / 1000.0 - self.text_start_time_s) * 1000.0
                 word_ms = self.ms_per_word_for_trial(trial.wpm)
                 words = trial.question_item.text.split()
                 total_duration_ms = len(words) * word_ms
 
                 if elapsed_ms < total_duration_ms:
-                    word_idx = int(elapsed_ms / word_ms)
-                    if word_idx < len(words):
+                    word_idx = int(elapsed_ms / word_ms) if word_ms > 0 else 0
+                    if 0 <= word_idx < len(words):
                         self.draw_centered_word(self.screen, self.font_text, words[word_idx])
                 else:
-                    # Brief blank before question
+                    # brief blank before question
                     self.state = "showing_question"
                     self.option_rects = []
                     self.screen.fill(self.config["bg_color"])
                     pygame.display.flip()
                     pygame.time.delay(self.config["inter_trial_blank_ms"])
+                    # DO NOT set question_start_time here; set on first render
 
             elif self.state == "showing_question":
+                # set question start time on first frame the question is actually rendered
+                if self.question_start_time_s is None:
+                    self.question_start_time_s = pygame.time.get_ticks() / 1000.0
+                    self._log({
+                        "record_type": "question_shown",
+                        "timestamp": datetime.now().isoformat(),
+                        "trial_index": self.trial_idx,
+                        "trial_number": self.trial_idx + 1,
+                        "question_start_time_s": self.question_start_time_s,
+                    })
+
                 q = trial.question_item
                 q_surf = self.font_question.render(q.question, True, self.config["text_color"])
                 self.screen.blit(q_surf, (50, 80))
@@ -241,7 +350,6 @@ class Experiment:
                     x = (self.screen.get_width() - w) // 2
                     rect = pygame.Rect(x, y, w, h)
 
-                    # Draw option box
                     pygame.draw.rect(self.screen, (50, 55, 60), rect, border_radius=8)
                     pygame.draw.rect(self.screen, self.config["accent_color"], rect, 1, border_radius=8)
                     self.screen.blit(opt_surf, (x + pad, y + pad))
@@ -257,12 +365,21 @@ class Experiment:
         print("\n=== Results ===")
         for r in self.results:
             status = "OK" if r["correct"] else "X"
-            ms = 60000 // r["wpm"] if r["wpm"] > 0 else 0
-            print(f"Trial {r['trial']}: {r['wpm']} WPM ({ms} ms/word) — {status}")
+            ms = int(r["ms_per_word"])
+            rt = "NA" if r["rt_ms"] is None else f"{int(r['rt_ms'])} ms"
+            print(f"Trial {r['trial']}: {r['wpm']} WPM ({ms} ms/word) — {status} — RT {rt}")
+
         correct_count = sum(1 for r in self.results if r["correct"])
         print(f"\nScore: {correct_count}/{len(self.results)} correct")
+        print(f"Log saved to: {self.log_path}")
 
-
+        # log footer
+        self._log({
+            "record_type": "experiment_footer",
+            "timestamp": datetime.now().isoformat(),
+            "total_trials_completed": len(self.results),
+            "num_correct": correct_count,
+        })
 
 
 if __name__ == "__main__":
