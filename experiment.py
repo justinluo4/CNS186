@@ -6,10 +6,11 @@ to select answers.
 """
 
 import pygame
-
+import pygame.freetype
 import random
 from dataclasses import dataclass
 from pathlib import Path
+import math
 
 
 # ============== Configuration ==============
@@ -20,8 +21,8 @@ CONFIG = {
     "ms_between_words": None,  # ms each word is shown; None = derive from trial WPM (60000/wpm)
     "screen_width": 900,
     "screen_height": 700,
-    "bg_color": (30, 30, 35),
-    "text_color": (240, 240, 245),
+    "bg_color": (230, 230, 245),
+    "text_color": (30, 30, 35) ,
     "accent_color": (100, 180, 255),
     "font_size_text": 24,
     "font_size_question": 22,
@@ -45,6 +46,7 @@ class QuestionItem:
 class Trial:
     question_item: QuestionItem
     wpm: int
+    bold_proportion: tuple[float, float] | None = None
 
 
 # ============== Parser ==============
@@ -122,9 +124,17 @@ class Experiment:
         self.wpm_range = wpm_range
         self.trials = self.sample_trials()
         self.config = config
-        self.font_text = pygame.font.SysFont("Arial", config["font_size_text"])
-        self.font_question = pygame.font.SysFont("Arial", config["font_size_question"])
-        self.font_options = pygame.font.SysFont("Arial", config["font_size_options"])
+        self.font_text = pygame.freetype.SysFont("Arial", config["font_size_text"])
+        try:
+            self.font_text_bold = pygame.freetype.SysFont("Arial Bold", config["font_size_text"])
+        except (OSError, ValueError):
+            self.font_text_bold = self.font_text  # fallback: no bold on this system
+        self.font_question = pygame.freetype.SysFont("Arial", config["font_size_question"])
+        self.font_options = pygame.freetype.SysFont("Arial", config["font_size_options"])
+        # freetype origin mode: dest position is text origin (baseline)
+        for f in (self.font_text, self.font_text_bold, self.font_question, self.font_options):
+            f.origin = True
+        self.M_ADV_X = 4  # index of horizontal_advance_x in get_metrics()
         self.screen = pygame.display.set_mode((config["screen_width"], config["screen_height"]))
         pygame.display.set_caption("Reading Speed Experiment")
         self.clock = pygame.time.Clock()
@@ -135,7 +145,9 @@ class Experiment:
         self.option_rects: list[tuple[pygame.Rect, str]] = []  # (rect, answer_letter)
 
     def sample_trials(self) -> list[Trial]:
-        return [Trial(q, w) for q, w in zip(random.sample(self.questions, self.n_trials), random.sample(range(self.wpm_range[0], self.wpm_range[1]), self.n_trials))]
+        qs = random.sample(self.questions, self.n_trials)
+        wpms = random.sample(range(self.wpm_range[0], self.wpm_range[1] + 1), self.n_trials)
+        return [Trial(q, w, bold_proportion=(0.0, 0.3)) for q, w in zip(qs, wpms)]
 
 
 
@@ -147,12 +159,55 @@ class Experiment:
             return self.config["ms_between_words"]
         return 60000.0 / wpm if wpm > 0 else 0
 
-    def draw_centered_word(self, surf: pygame.Surface, font: pygame.font.Font, word: str):
-        """Draw a single word centered on screen."""
-        s = font.render(word, True, self.config["text_color"])
-        x = (surf.get_width() - s.get_width()) // 2
-        y = (surf.get_height() - s.get_height()) // 2
-        surf.blit(s, (x, y))
+    def draw_centered_word(
+        self,
+        surf: pygame.Surface,
+        word: str,
+        word_start_char: int,
+        bold_proportion: tuple[float, float] | None,
+    ):
+        """Draw a single word; characters in bold_proportion range are bold. Center the display on the bolded section."""
+        if not word:
+            return
+        color = self.config["text_color"]
+        font = self.font_text
+        font_bold = self.font_text_bold
+        rect = font.get_rect(word)
+        rect_bold = font_bold.get_rect(word)
+        w = max(rect.width, rect_bold.width)
+        h = max(rect.height, rect_bold.height)
+        text_surf = pygame.Surface((w, h))
+        text_surf.fill(self.config["bg_color"])
+        baseline = rect.y
+        metrics_reg = font.get_metrics(word)
+        metrics_bold = font_bold.get_metrics(word)
+        bold_start, bold_end = bold_proportion if bold_proportion else (-1, -1)
+        # Character indices in this word that fall in bold range (passage indices)
+        word_bold_start = max(0, math.floor(bold_start * len(word)))
+        word_bold_end = min(len(word), math.ceil(bold_end * len(word)))
+        has_bold_in_word = word_bold_start < word_bold_end
+        x = 0
+        x_positions = [0]  # x at start of each character
+        for i, letter in enumerate(word):
+            use_bold = word_bold_start <= i < word_bold_end
+            f = font_bold if use_bold else font
+            metric = (metrics_bold if use_bold else metrics_reg)[i]
+            f.render_to(text_surf, (x, baseline), letter, color)
+            x += metric[self.M_ADV_X]
+            x_positions.append(x)
+        # Position: baseline at fixed y; horizontal position from percentage (0=left, 50=center, 100=right)
+        screen_rect = surf.get_rect()
+        baseline_y = screen_rect.centery        
+        text_rect = text_surf.get_rect()
+        text_rect.y = int(baseline_y - baseline)
+        if has_bold_in_word:
+            bold_x_start = x_positions[word_bold_start]
+            bold_x_end = x_positions[word_bold_end]
+            bold_center_x = (bold_x_start + bold_x_end) / 2
+            text_rect.x = int(screen_rect.centerx - bold_center_x)
+        else:
+            text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
+        surf.blit(text_surf, text_rect)
 
     def run(self):
         """Run the experiment main loop."""
@@ -191,21 +246,26 @@ class Experiment:
                             break
 
             self.screen.fill(self.config["bg_color"])
+            # Red vertical line down the center
+            # cx = self.screen.get_width() // 2
+            # pygame.draw.line(
+            #     self.screen, (255, 0, 0), (cx, 0), (cx, self.screen.get_height()), 2
+            # )
 
             if self.state == "ready":
                 ms = self.ms_per_word_for_trial(trial.wpm)
                 prompt = f"Trial {self.trial_idx + 1} of {len(self.trials)}  —  {int(ms)} ms/word"
-                prompt_surf = self.font_question.render(prompt, True, self.config["accent_color"])
-                self.screen.blit(
-                    prompt_surf,
-                    (self.screen.get_width() // 2 - prompt_surf.get_width() // 2, 80),
+                prompt_surf, prompt_rect = self.font_question.render(
+                    prompt, fgcolor=self.config["accent_color"]
                 )
+                prompt_rect.midtop = (self.screen.get_width() // 2, 80)
+                self.screen.blit(prompt_surf, prompt_rect)
                 instruct = "Press SPACE to begin"
-                inst_surf = self.font_text.render(instruct, True, self.config["text_color"])
-                self.screen.blit(
-                    inst_surf,
-                    (self.screen.get_width() // 2 - inst_surf.get_width() // 2, 300),
+                inst_surf, inst_rect = self.font_text.render(
+                    instruct, fgcolor=self.config["text_color"]
                 )
+                inst_rect.midtop = (self.screen.get_width() // 2, 300)
+                self.screen.blit(inst_surf, inst_rect)
 
             elif self.state == "showing_text":
                 elapsed_ms = (pygame.time.get_ticks() / 1000.0 - self.text_start_time) * 1000
@@ -216,7 +276,13 @@ class Experiment:
                 if elapsed_ms < total_duration_ms:
                     word_idx = int(elapsed_ms / word_ms)
                     if word_idx < len(words):
-                        self.draw_centered_word(self.screen, self.font_text, words[word_idx])
+                        word_start_char = sum(len(words[j]) + 1 for j in range(word_idx))
+                        self.draw_centered_word(
+                            self.screen,
+                            words[word_idx],
+                            word_start_char,
+                            trial.bold_proportion,
+                        )
                 else:
                     # Brief blank before question
                     self.state = "showing_question"
@@ -227,22 +293,27 @@ class Experiment:
 
             elif self.state == "showing_question":
                 q = trial.question_item
-                q_surf = self.font_question.render(q.question, True, self.config["text_color"])
-                self.screen.blit(q_surf, (50, 80))
+                q_surf, q_rect = self.font_question.render(
+                    q.question, fgcolor=self.config["text_color"]
+                )
+                q_rect.topleft = (50, 80)
+                self.screen.blit(q_surf, q_rect)
 
                 self.option_rects = []
                 y = 180
                 for opt in q.options:
                     letter = opt[0].upper() if opt else ""
-                    opt_surf = self.font_options.render(opt, True, self.config["text_color"])
+                    opt_surf, opt_rect = self.font_options.render(
+                        opt, fgcolor=self.config["text_color"]
+                    )
                     pad = self.config["option_padding"]
-                    w = max(400, opt_surf.get_width() + pad * 2)
-                    h = opt_surf.get_height() + pad * 2
+                    w = max(400, opt_rect.width + pad * 2)
+                    h = opt_rect.height + pad * 2
                     x = (self.screen.get_width() - w) // 2
                     rect = pygame.Rect(x, y, w, h)
 
                     # Draw option box
-                    pygame.draw.rect(self.screen, (50, 55, 60), rect, border_radius=8)
+                    pygame.draw.rect(self.screen, self.config["bg_color"], rect, border_radius=8)
                     pygame.draw.rect(self.screen, self.config["accent_color"], rect, 1, border_radius=8)
                     self.screen.blit(opt_surf, (x + pad, y + pad))
 
