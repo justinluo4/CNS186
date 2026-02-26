@@ -60,6 +60,11 @@ def _norm_cdf(x: float) -> float:
 
 CONFIG = {
     "questions_file": "questions.txt",
+    
+    # HARD CODED PASSAGE / QUESTION VALUES
+    "num_passages": 5,
+    "questions_per_passage": 4,   
+    "shuffle_passages": True,
 
     # ── Conditions (one Bayesian estimator each) ──────────────────────────
     # bold_proportion = [start_frac, end_frac] of each word's characters to bold.
@@ -67,8 +72,8 @@ CONFIG = {
     "conditions": [
 #        {"id": "no_bold", "label": "No bold (baseline)", "bold_proportion": None},
         {"id": "bio_start",  "label": "Bionic start 30 %",        "bold_proportion": [0.0, 0.30]},
-        {"id": "bio_middle",  "label": "Bionic middle 50 %",        "bold_proportion": [0.3, 0.70]},
-        {"id": "bio_end",  "label": "Bionic end 30 %",        "bold_proportion": [0.7, 1.0]},
+        {"id": "bio_middle",  "label": "Bionic middle 30 %",        "bold_proportion": [0.35, 0.65]},
+        # {"id": "bio_end",  "label": "Bionic end 30 %",        "bold_proportion": [0.7, 1.0]},
     ],
 
     # ── Bayesian estimator parameters ─────────────────────────────────────
@@ -119,13 +124,17 @@ CONFIG = {
 # ══════════════════════════════════════════════════════════════════
 #  Data structures
 # ══════════════════════════════════════════════════════════════════
-
+PASSAGE_TO_QUESTION = {}
 @dataclass
 class QuestionItem:
+    # TODO: Discriminate between inference and recall questions
+    # type: str 
     text: str
     question: str
     options: list[str]       # ["A) ...", "B) ...", ...]
     correct_answer: str      # "A", "B", "C", or "D"
+    passage_id: int = 0
+    within_passage_idx: int = 0
 
 
 @dataclass
@@ -315,7 +324,7 @@ class BayesianAdaptiveState:
 #  Questions parser
 # ══════════════════════════════════════════════════════════════════
 
-def load_questions(filepath: str) -> list[QuestionItem]:
+def load_questions(filepath: str, questions_per_passage: int = 4) -> list[QuestionItem]:
     path = Path(filepath)
     if not path.exists():
         raise FileNotFoundError(f"Questions file not found: {filepath}")
@@ -323,6 +332,7 @@ def load_questions(filepath: str) -> list[QuestionItem]:
     raw = path.read_text(encoding="utf-8")
     items: list[QuestionItem] = []
 
+    # Each "###" block is one (text subsection + question + options + answer)
     for block in raw.split("###"):
         block = block.strip()
         if not block:
@@ -336,20 +346,25 @@ def load_questions(filepath: str) -> list[QuestionItem]:
 
         i = 0
         while i < len(lines):
-            line = lines[i]
-            if line.strip() == "TEXT":
+            line = lines[i].strip()
+
+            if line == "TEXT":
                 i += 1
                 while i < len(lines) and lines[i].strip() not in ("Q", "QUESTION"):
-                    text_lines.append(lines[i].strip())
+                    s = lines[i].strip()
+                    if s:
+                        text_lines.append(s)
                     i += 1
                 continue
-            if line.strip() in ("Q", "QUESTION"):
+
+            if line in ("Q", "QUESTION"):
                 i += 1
                 if i < len(lines):
                     question = lines[i].strip()
                     i += 1
                 continue
-            if line.strip() == "OPTS":
+
+            if line == "OPTS":
                 i += 1
                 while i < len(lines) and lines[i].strip() not in ("ANS", "ANSWER"):
                     opt = lines[i].strip()
@@ -357,18 +372,40 @@ def load_questions(filepath: str) -> list[QuestionItem]:
                         options.append(opt)
                     i += 1
                 continue
-            if line.strip() in ("ANS", "ANSWER"):
+
+            if line in ("ANS", "ANSWER"):
                 i += 1
-                if i < len(lines):
+                if i < len(lines) and lines[i].strip():
                     answer = lines[i].strip().upper()[0]
-                    i += 1
+                i += 1
                 continue
+
             i += 1
 
         text = " ".join(text_lines).strip()
-        if text and question and options and answer:
-            items.append(QuestionItem(text=text, question=question,
-                                      options=options, correct_answer=answer))
+        if not (text and question and options and answer):
+            continue
+
+        item_idx = len(items)
+        passage_id = item_idx // questions_per_passage
+        within_idx = item_idx % questions_per_passage
+
+        qi = QuestionItem(
+            text=text,
+            question=question,
+            options=options,
+            correct_answer=answer,
+            passage_id=passage_id,
+            within_passage_idx=within_idx,
+        )
+        items.append(qi)
+
+    # Optional: build a proper mapping passage_id -> list[QuestionItem]
+    PASSAGE_TO_QUESTION.clear()
+    for qi in items:
+        PASSAGE_TO_QUESTION.setdefault(qi.passage_id, []).append(qi)
+
+    print("DEBUG passage groups:", {k: len(v) for k, v in PASSAGE_TO_QUESTION.items()})
     return items
 
 
@@ -386,9 +423,20 @@ class Experiment:
         self.rng = random.Random(self.seed)
 
         # ── Question pool ─────────────────────────────────────────────────
-        self.question_pool = list(questions)
-        self.rng.shuffle(self.question_pool)
-        self._q_idx = 0
+        self.passage_to_items: dict[int, list[QuestionItem]] = {}
+        for qi in questions:
+            self.passage_to_items.setdefault(qi.passage_id, []).append(qi)
+
+        # ensure within-passage order is stable (0,1,2,3)
+        for pid in self.passage_to_items:
+            self.passage_to_items[pid].sort(key=lambda x: x.within_passage_idx)
+
+        self.passage_ids = sorted(self.passage_to_items.keys())
+        if self.config.get("shuffle_passages", True):
+            self.rng.shuffle(self.passage_ids)
+
+        self._passage_cursor = 0
+        self._within_cursor = 0
 
         # ── Bayesian estimators (one per condition) ────────────────────────
         self.staircases: dict[str, BayesianAdaptiveState] = {}
@@ -397,17 +445,31 @@ class Experiment:
         self._build_estimators()
 
         # ── Fonts ─────────────────────────────────────────────────────────
-        self.font_text = pygame.freetype.SysFont("Arial", config["font_size_text"])
-        try:
-            self.font_text_bold = pygame.freetype.SysFont("Arial Bold", config["font_size_text"])
-        except (OSError, ValueError):
-            self.font_text_bold = self.font_text
+        self.font_text = pygame.freetype.SysFont(
+            "Arial",
+            config["font_size_text"],
+            bold=False
+        )
+
+        self.font_text_bold = pygame.freetype.SysFont(
+            "Arial",
+            config["font_size_text"],
+            bold=True
+        )
+
         self.font_question = pygame.freetype.SysFont("Arial", config["font_size_question"])
         self.font_options = pygame.freetype.SysFont("Arial", config["font_size_options"])
         self.font_small = pygame.freetype.SysFont("Arial", config["font_size_small"])
-        for f in (self.font_text, self.font_text_bold, self.font_question,
-                  self.font_options, self.font_small):
+
+        for f in (
+            self.font_text,
+            self.font_text_bold,
+            self.font_question,
+            self.font_options,
+            self.font_small,
+        ):
             f.origin = True
+
         self.M_ADV_X = 4
 
         # ── Display ───────────────────────────────────────────────────────
@@ -485,10 +547,21 @@ class Experiment:
             )
 
     def _pick_question(self) -> QuestionItem:
-        q = self.question_pool[self._q_idx % len(self.question_pool)]
-        self._q_idx += 1
-        if self._q_idx % len(self.question_pool) == 0:
-            self.rng.shuffle(self.question_pool)
+        if self._passage_cursor >= len(self.passage_ids):
+            # fallback (should not happen unless you run out)
+            return self.questions[self.rng.randrange(len(self.questions))]
+
+        pid = self.passage_ids[self._passage_cursor]
+        items = self.passage_to_items[pid]
+
+        q = items[self._within_cursor]
+        self._within_cursor += 1
+
+        # if we finished the 4 questions for this passage, advance to next passage
+        if self._within_cursor >= len(items):
+            self._passage_cursor += 1
+            self._within_cursor = 0
+
         return q
 
     # ── per-word ms ───────────────────────────────────────────────────────
@@ -538,11 +611,14 @@ class Experiment:
         screen_rect = surf.get_rect()
         text_rect = text_surf.get_rect()
         text_rect.y = int(screen_rect.centery - baseline)
-        if has_bold:
-            bold_center_x = (x_positions[word_bold_start] + x_positions[word_bold_end]) / 2
-            text_rect.x = int(screen_rect.centerx - bold_center_x)
-        else:
-            text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
+        
+        # DO NOT CENTER WHEN MIDDLE BOLD 
+        # if has_bold:
+        #     bold_center_x = (x_positions[word_bold_start] + x_positions[word_bold_end]) / 2
+        #     text_rect.x = int(screen_rect.centerx - bold_center_x)
+        # else:
+        #     text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
+        text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
         surf.blit(text_surf, text_rect)
 
     # ── logging ───────────────────────────────────────────────────────────
