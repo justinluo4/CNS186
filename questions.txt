@@ -1,91 +1,299 @@
 ###
 TEXT
-The quick brown fox jumps over the lazy dog. Every morning it runs through the forest looking for food.
+The Antikythera Mechanism is widely regarded as one of the most remarkable technological artifacts to survive from the ancient world. Discovered in 1901 within a shipwreck off the Greek island of Antikythera, the device initially appeared to be a collection of corroded bronze fragments embedded in marine encrustation. 
 
 Q
-What does the fox do every morning?
+When was the Antikythera Mechanism discovered?
 
 OPTS
-A) Sleeps in a den
-B) Runs through the forest
-C) Hunts in the mountains
-D) Swims in the lake
+A) 1908
+B) 1801
+C) 1809
+D) 1901
+
+ANS
+D
+###
+TEXT
+However, subsequent examination revealed a dense internal arrangement of interlocking gears, suggesting that the object had once functioned as a complex mechanical instrument. The shipwreck itself is believed to date to the first century BCE, and inscriptions on the mechanism indicate that it was likely constructed during the Hellenistic period.
+
+Q
+What does the use of interlocking gears imply about its creators?
+
+OPTS
+A) They lacked astronomical knowledge
+B) They understood complex motion patterns 
+C) They copied Egyptian tools
+D) They were primarily artists
 
 ANS
 B
 ###
 TEXT
-Maria bought three apples and two oranges at the market. She paid with a ten dollar bill and received two dollars in change.
+Detailed imaging conducted decades after its discovery demonstrated that the device contained at least thirty meshing gears, some of which were mounted on rotating axles. These components enabled the mechanism to simulate astronomical cycles, including the phases of the Moon and the irregularities of its orbit. 
 
 Q
-How much did Maria's fruits cost?
+Approximately how many gears were found inside the mechanism?
+OPTS 
+A) 30
+B) 20
+C) 15
+D) 60
+
+ANS
+A
+###
+TEXT
+A differential gear system—previously thought to have been invented in the modern era—allowed the device to account for variations in lunar velocity, reflecting an advanced understanding of celestial mechanics. The mechanism also appears to have been capable of predicting solar and lunar eclipses through the use of calibrated dials on its exterior surfaces. 
+
+Q
+What may this device have been used for?
 
 OPTS
-A) Five dollars
-B) Eight dollars
-C) Ten dollars
-D) Twelve dollars
+A) Predicting political advances during the lunar eclipse
+B) Tracking the 4-year cycle of the ancient Olympic Games.
+C) Predicting when a meteor may strike
+D) Tracking the motion of the Atlantic ocean
 
 ANS
 B
 ###
 TEXT
-The old clock in the town square chimes twelve times at noon. Children gather there to eat lunch and play before school resumes at one o clock.
+In 1924, workers in a limestone quarry near the town of Taung in South Africa uncovered an unusual fossil embedded within a block of rock. The specimen consisted of a small skull and a natural cast of the braincase formed by sediment that had filled the cranial cavity over time. At first glance, the fossil appeared to resemble that of a juvenile ape. 
 
 Q
-When does school resume according to the passage?
+What specimen was found?
 
 OPTS
-A) At noon
-B) At twelve thirty
-C) At one o'clock
-D) After lunch
+A) Small skull and braincase
+B) Cast of small skull and braincase
+C) Cast of small skull and cast of braincase
+D) Small skull and cast of braincase
 
 ANS
-C
+D
 ###
 TEXT
-Scientists discovered that bees can recognize human faces. They trained bees to associate pictures of faces with sweet rewards and found the insects could remember them for days.
+However, when the specimen was sent to Australian anatomist Raymond Dart for analysis, he quickly noticed anatomical features that distinguished it from any known primate species. While the overall brain size was relatively small—comparable to that of a young chimpanzee—the position of the foramen magnum, the opening at the base of the skull through which the spinal cord passes, was located more centrally than in modern apes. 
 
 Q
-What did scientists train bees to associate with faces?
+Why may the features from this fossilized specimen differ from modern apes and humans?
 
 OPTS
-A) Colors
-B) Sweet rewards
-C) Other bees
-D) Flowers
+A) Its species may have died out long before integrating with modern species
+B) Its species may not be a hominin, but a separate family of animal
+C) The specimen may have been damaged and interpreted wrongly
+D) This individual was likely a mutated ape or human
+
+ANS
+A
+###
+TEXT
+This suggested that the individual had held its head in a more upright posture and may have walked on two legs rather than on all fours. Dart concluded that the fossil represented a previously unknown species of early hominin, which he named Australopithecus africanus. 
+
+Q
+How many legs did this specimen likely use to walk?
+
+OPTS
+A) One
+B) Two
+C) Three
+D) Four
 
 ANS
 B
 ###
 TEXT
-The library closes at nine PM on weekdays but stays open until midnight on Fridays. Students often study there during exam week because it has free wifi and quiet study rooms.
+The child was estimated to have been around three or four years old at the time of death, based on dental development and cranial structure. Dart proposed that this species represented an evolutionary link between ape-like ancestors and modern humans, challenging the prevailing scientific view that large brain size must have evolved before upright walking.
 
 Q
-Until what time does the library stay open on Fridays?
+What is the most likely reason that the child died?
 
 OPTS
-A) Nine PM
-B) Ten PM
-C) Midnight
-D) One AM
+A) Childbirth since it was dangerous without modern medicine
+B) Could not walk well due to the small brain size
+C) Larger predator may have attacked it
+D) It may have been a casualty in a war
 
 ANS
 C
 ###
 TEXT
-Tom's grandmother gave him a wooden toy train for his birthday. She had painted each carriage a different color: red, blue, green, and yellow. Tom played with it every day in his room.
+Deep within the dense rainforests of the northeastern Democratic Republic of the Congo lives a mammal that puzzled Western scientists well into the twentieth century. Known today as the okapi (Okapia johnstoni), this elusive animal resembles a hybrid of several more familiar species. 
 
 Q
-How many carriages did the toy train have?
+What biome does the okapi live in?
 
 OPTS
-A) Two
-B) Three
-C) Four
-D) Five
+A) Desert
+B) Grassland
+C) Shrubland
+D) Rainforest
+
+ANS
+D
+###
+TEXT
+It possesses a horse-like body, a long prehensile tongue similar to that of a giraffe, and distinctive zebra-like stripes on its hindquarters and legs. Despite its unusual appearance, the okapi is not closely related to zebras at all. Instead, it is the only living relative of the giraffe. For centuries, the okapi remained unknown to scientists outside central Africa, although local communities were well aware of its existence. 
+
+Q
+Why might the okapi have stripes on its hindquarters and legs?
+
+OPTS
+A) To match the look of zebras and blend in with their herds
+B) To camouflage with the rainforest vegetation 
+C) To mimic the look of predators such as tigers
+D) To blend in with the grasses in its habitat
+
+ANS
+B
+###
+TEXT
+European explorers heard accounts of a mysterious forest animal that left hoofprints resembling those of a donkey but lived in heavily wooded areas rather than open plains. In 1901, British colonial administrator Sir Harry Johnston obtained physical evidence of the species, including skin samples and a skull, which allowed zoologists to classify it scientifically for the first time.
+
+Q
+Which European acquired the evidence needed to classify the okapi?
+
+OPTS
+A) Sir Charles Darwin
+B) Sir Henry Williams
+C) Sir Harry Johnson
+D) Sir Konrad Lorenz 
 
 ANS
 C
 ###
+TEXT
+Unlike giraffes, which inhabit savannas and rely on height to browse leaves from tall trees, okapis are adapted to life in dense forest environments. Their relatively short necks and compact bodies allow them to move easily through thick vegetation. The stripes on their hind legs may serve as a form of camouflage, helping blend in with the filtered light patterns on the forest floor.
+
+Q
+Why may okapis have reached endangerment faster than giraffes?
+
+OPTS
+A) Giraffes reproduce more quickly than okapis
+B) Since okapis are shorter than giraffes they cannot escape predators as fast
+C) Okapis are are not as well liked and therefore can’t raise money in zoos
+D) The only rainforests which okapi inhabit are being logged 
+
+ANS
+D
+###
+TEXT
+During the mid-19th century, China experienced one of the most devastating civil wars in recorded history: the Taiping Rebellion. Beginning in 1850 and lasting until 1864, the conflict resulted in the deaths of an estimated 20 to 30 million people. Although it began as a regional uprising, it eventually grew into a massive political and religious movement.
+
+Q
+How many people were killed in the Taiping Rebellion?
+
+OPTS
+A) About 25 million
+B) About 15 million
+C) About 40 million
+D) About 10 million
+
+ANS
+A
+###
+TEXT
+The rebellion was led by Hong Xiuquan, a man from southern China who had repeatedly failed the imperial civil service examinations. After encountering Christian missionary writings, Hong developed a unique religious belief system that combined elements of Christianity with his own interpretations. 
+
+Q
+What may have been one of Hong Xiuquan’s beliefs?
+
+OPTS
+A) That the Buddha was the true and only God
+B) That the Christian doctrine may help China progress
+C) That Jesus Christ should not be thought of as a God
+D) That Hinduism should be merged with Christianity
+
+ANS
+ B
+###
+TEXT
+He came to believe that he was the younger brother of Jesus Christ and had been divinely chosen to rid China of corruption and establish a heavenly kingdom on Earth. The Taiping rebels sought to overthrow the Qing dynasty, which they viewed as morally corrupt. They aimed to create a new social order based on communal land ownership, strict moral codes, and gender equality.
+
+Q
+Which aspects did the Taiping rebels want to implement in China?
+
+OPTS
+A) A strictly hierarchical social order
+B) An open market based economy
+C) Land which was communally owned
+D) More taxes on the Qing rulers
+
+ANS
+C
+###
+TEXT
+Practices such as foot binding were banned, and women were allowed to serve in the military. The movement also prohibited the use of opium, alcohol, and gambling, which its leaders believed contributed to social decay. After capturing the city of Nanjing in 1853, the Taiping established it as their capital and renamed it Tianjing, meaning “Heavenly Capital.” 
+
+Q
+How could the new found social equality benefit the Taiping rulers?
+
+OPTS
+A) The army could increase in size due to the addition of women
+B) Imports of banned substances such an opium would start a thriving black market
+C) The capital would become a Church for the new religion
+D) The wealth from common people would be sent to the rulers
+
+ANS
+A
+###
+TEXT
+Cryovolcanism refers to a form of volcanic activity that occurs on extremely cold planetary bodies, particularly icy moons in the outer solar system. Unlike terrestrial volcanism, which involves the eruption of molten rock, cryovolcanic materials are often stored beneath a frozen crust and are released through fissures or vents when internal pressure exceeds the strength of the surrounding ice layers.
+
+Q
+Where does cryovolcanism occur?
+
+OPTS
+A) On temperate moons
+B) On Earth
+C) On Earth’s moon
+D) On icy moons
+
+ANS
+D
+###
+TEXT
+One of the most well-documented examples of cryovolcanic activity has been observed on Saturn’s moon Enceladus. Data collected by spacecraft revealed jets of water vapor and ice particles erupting from fractures near the moon’s south pole. These plumes are believed to originate from subsurface reservoirs of liquid water maintained by tidal heating.
+
+Q
+Why might cryovolcanic activity alter the appearance of Enceladus’ terrain over time?
+
+OPTS
+A) Because meteor impacts melt the surface ice
+B) Because liquid and ice refreeze in new forms after reaching the surface
+C) Because solar winds erode the crust
+D) Because tectonic plates shift beneath the crust
+
+ANS
+B
+###
+TEXT
+This heating allows portions of the internal ocean to remain in a liquid state despite extremely low surface temperatures. Similar features have been hypothesized on Jupiter’s moon Europa. Observations of Europa’s surface indicate the presence of chaotic terrain, including disrupted ice plates and ridged plains that may have formed as a result of cryovolcanic resurfacing.
+On these moons what state of matter are the deepest parts of the ocean in?
+
+OPTS
+A) Solid 
+B) Gas
+C) Plasma
+D) Liquid
+
+ANS
+D
+###
+TEXT
+The study of cryovolcanism has implications for understanding the potential habitability of icy moons. Subsurface oceans that interact with mineral-rich rocky interiors may create chemical environments suitable for microbial life. Consequently, evidence of cryovolcanic activity is often interpreted as an indicator of ongoing geological processes that could sustain such environments beneath otherwise frozen surfaces.
+
+Q
+Why is cryovolcanism considered relevant to the search for microbial life?
+
+OPTS
+A) It may indicate the planet is too cold and inhospitable 
+B) It may indicate the planet contains frozen deserts
+C) It may indicate chemically active subsurface oceans
+D) It indicates an increase in surface temperature permanently
+
+ANS
+C
+###
+
