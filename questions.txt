@@ -18,7 +18,7 @@ TEXT
 However, subsequent examination revealed a dense internal arrangement of interlocking gears, suggesting that the object had once functioned as a complex mechanical instrument. The shipwreck itself is believed to date to the first century BCE, and inscriptions on the mechanism indicate that it was likely constructed during the Hellenistic period.
 
 Q
-What does the use of interlocking gears imply about its creators?
+What do the interlocking gears imply their its creators?
 
 OPTS
 A) They lacked astronomical knowledge
@@ -33,7 +33,7 @@ TEXT
 Detailed imaging conducted decades after its discovery demonstrated that the device contained at least thirty meshing gears, some of which were mounted on rotating axles. These components enabled the mechanism to simulate astronomical cycles, including the phases of the Moon and the irregularities of its orbit. 
 
 Q
-Approximately how many gears were found inside the mechanism?
+About how many gears were inside the mechanism?
 OPTS 
 A) 30
 B) 20
@@ -59,15 +59,45 @@ ANS
 B
 ###
 TEXT
+One of these dials followed the Saros cycle, an approximately eighteen-year period after which eclipses repeat in a similar sequence. The presence of engraved instructional text suggests that the user could interpret these predictions without specialized mathematical training, implying that the device may have served educational or navigational purposes.
+
+Q
+How long is the Saros cycle?
+
+OPTS 
+A) 12 years
+B) 16 years
+C) 18 years
+D) 20 years
+
+ANS
+C
+###
+TEXT
+Despite the sophistication of the mechanism, no comparable devices have been found from the same historical period. This absence has led scholars to speculate that such instruments were either rare luxury items or that the knowledge required to produce them was subsequently lost. As a result, the Antikythera Mechanism has often been described as the earliest known example of an analog computer.
+
+Q
+Why was the device considered a luxury item?
+
+OPTS 
+A) It was mass produced
+B) It was rare and made of expensive materials
+C) It was made for the king’s scribe
+D) It was the only device with gears
+
+ANS
+B
+###
+TEXT
 In 1924, workers in a limestone quarry near the town of Taung in South Africa uncovered an unusual fossil embedded within a block of rock. The specimen consisted of a small skull and a natural cast of the braincase formed by sediment that had filled the cranial cavity over time. At first glance, the fossil appeared to resemble that of a juvenile ape. 
 
 Q
 What specimen was found?
 
 OPTS
-A) Small skull and braincase
-B) Cast of small skull and braincase
-C) Cast of small skull and cast of braincase
+A) Cast of small femur bone
+B) Spine and ribs
+C) Cast of fingerprints and fingers
 D) Small skull and cast of braincase
 
 ANS
@@ -77,7 +107,7 @@ TEXT
 However, when the specimen was sent to Australian anatomist Raymond Dart for analysis, he quickly noticed anatomical features that distinguished it from any known primate species. While the overall brain size was relatively small—comparable to that of a young chimpanzee—the position of the foramen magnum, the opening at the base of the skull through which the spinal cord passes, was located more centrally than in modern apes. 
 
 Q
-Why may the features from this fossilized specimen differ from modern apes and humans?
+Why may this fossilized specimen differ from modern apes/humans?
 
 OPTS
 A) Its species may have died out long before integrating with modern species
@@ -119,6 +149,36 @@ ANS
 C
 ###
 TEXT
+At the time, many researchers believed that human evolution had occurred primarily in Europe or Asia. Dart’s claim that an early human ancestor had lived in Africa was met with skepticism, particularly because the fossil’s small brain seemed inconsistent with contemporary expectations of what a human precursor should look like. 
+
+Q
+Where did researchers initially think humans came from?
+
+OPTS
+A) Africa
+B) Eurasia
+C) America
+D) Australia
+
+ANS
+B
+###
+TEXT
+Critics argued that the Taung specimen was simply an extinct ape rather than evidence of a transitional species. However, additional fossil discoveries in southern and eastern Africa revealed similar anatomical patterns, supporting Dart’s theory. The Taung Child is now recognized as one of the earliest known members of the human lineage and a key piece of evidence supporting the hypothesis that bipedalism preceded significant increases in brain size during human evolution.
+
+Q
+Why did researchers change their mind about Dart’s theory?
+
+OPTS
+A) They read more books about evolution
+B) The fossils in Asia were manipulated
+C) They found current humans with similar brain size
+D) They accumulated more evidence from Africa
+
+ANS
+D
+###
+TEXT
 Deep within the dense rainforests of the northeastern Democratic Republic of the Congo lives a mammal that puzzled Western scientists well into the twentieth century. Known today as the okapi (Okapia johnstoni), this elusive animal resembles a hybrid of several more familiar species. 
 
 Q
@@ -152,7 +212,7 @@ TEXT
 European explorers heard accounts of a mysterious forest animal that left hoofprints resembling those of a donkey but lived in heavily wooded areas rather than open plains. In 1901, British colonial administrator Sir Harry Johnston obtained physical evidence of the species, including skin samples and a skull, which allowed zoologists to classify it scientifically for the first time.
 
 Q
-Which European acquired the evidence needed to classify the okapi?
+Which European acquired the evidence to classify the okapi?
 
 OPTS
 A) Sir Charles Darwin
@@ -167,16 +227,46 @@ TEXT
 Unlike giraffes, which inhabit savannas and rely on height to browse leaves from tall trees, okapis are adapted to life in dense forest environments. Their relatively short necks and compact bodies allow them to move easily through thick vegetation. The stripes on their hind legs may serve as a form of camouflage, helping blend in with the filtered light patterns on the forest floor.
 
 Q
-Why may okapis have reached endangerment faster than giraffes?
+Why may okapis have become endangered?
 
 OPTS
-A) Giraffes reproduce more quickly than okapis
-B) Since okapis are shorter than giraffes they cannot escape predators as fast
-C) Okapis are are not as well liked and therefore can’t raise money in zoos
+A) Okapis reproduce too slowly
+B) Since okapis are short they cannot escape predators fast
+C) Okapis are not well liked and therefore can’t raise money in zoos
 D) The only rainforests which okapi inhabit are being logged 
 
 ANS
 D
+###
+TEXT
+Okapis are primarily solitary animals and tend to occupy large home ranges that they mark using scent glands located on their feet. Their diet consists mainly of leaves, fruits, and fungi, many of which are toxic to other animals. By selectively feeding on these plants, okapis help maintain ecological balance within their habitat.
+
+Q
+What do okaipi eat?
+
+OPTS
+A) Dead matter
+B) Small animals
+C) Fruits
+D) Seaweed
+
+ANS
+C
+###
+TEXT
+Although the okapi species has survived for millions of years, it now faces significant threats from habitat destruction and illegal hunting. Conservation efforts have focused on protecting forest reserves and reducing poaching, as the okapi’s limited geographic range makes it particularly vulnerable to environmental change.
+
+Q
+Which of the following conservation efforts may help the okapi?
+
+OPTS
+A) Implementing anti-poaching laws
+B) Allowing okapi to enter nearby villages
+C) Giving okapi hay to eat
+D) Hunt all the natural predators
+
+ANS
+A
 ###
 TEXT
 During the mid-19th century, China experienced one of the most devastating civil wars in recorded history: the Taiping Rebellion. Beginning in 1850 and lasting until 1864, the conflict resulted in the deaths of an estimated 20 to 30 million people. Although it began as a regional uprising, it eventually grew into a massive political and religious movement.
@@ -227,7 +317,7 @@ TEXT
 Practices such as foot binding were banned, and women were allowed to serve in the military. The movement also prohibited the use of opium, alcohol, and gambling, which its leaders believed contributed to social decay. After capturing the city of Nanjing in 1853, the Taiping established it as their capital and renamed it Tianjing, meaning “Heavenly Capital.” 
 
 Q
-How could the new found social equality benefit the Taiping rulers?
+How could the new social equality benefit the Taiping rulers?
 
 OPTS
 A) The army could increase in size due to the addition of women
@@ -237,6 +327,36 @@ D) The wealth from common people would be sent to the rulers
 
 ANS
 A
+###
+TEXT
+Taiping rebels governed large areas of southern China for more than a decade. However, internal divisions among Taiping leaders weakened the movement over time. Rivalries and purges within the leadership created instability that ultimately undermined their ability to maintain control.
+
+Q
+Which areas of Asia did the Taiping rebels govern?
+
+OPTS
+A) None
+B) Mongolia and Northern China
+C) Southern China
+D) China
+
+ANS
+C
+###
+TEXT
+Meanwhile, Qing forces reorganized and received support from Western-trained military units. These troops introduced new tactics and technologies that gave them an advantage over the rebels. By the early 1860s, Qing forces began reclaiming territory, and in 1864 they recaptured Nanjing after a prolonged siege.
+
+Q
+Why did Western-trained units help Qing forces succeed?
+
+OPTS
+A) They brought religious guidance
+B) They introduced new technologies
+C) They negotiated peace treaties
+D) They supplied food to civilians
+
+ANS
+B
 ###
 TEXT
 Cryovolcanism refers to a form of volcanic activity that occurs on extremely cold planetary bodies, particularly icy moons in the outer solar system. Unlike terrestrial volcanism, which involves the eruption of molten rock, cryovolcanic materials are often stored beneath a frozen crust and are released through fissures or vents when internal pressure exceeds the strength of the surrounding ice layers.
@@ -257,7 +377,7 @@ TEXT
 One of the most well-documented examples of cryovolcanic activity has been observed on Saturn’s moon Enceladus. Data collected by spacecraft revealed jets of water vapor and ice particles erupting from fractures near the moon’s south pole. These plumes are believed to originate from subsurface reservoirs of liquid water maintained by tidal heating.
 
 Q
-Why might cryovolcanic activity alter the appearance of Enceladus’ terrain over time?
+Why might cryovolcanic activity alter the appearance of terrain over time?
 
 OPTS
 A) Because meteor impacts melt the surface ice
@@ -270,7 +390,9 @@ B
 ###
 TEXT
 This heating allows portions of the internal ocean to remain in a liquid state despite extremely low surface temperatures. Similar features have been hypothesized on Jupiter’s moon Europa. Observations of Europa’s surface indicate the presence of chaotic terrain, including disrupted ice plates and ridged plains that may have formed as a result of cryovolcanic resurfacing.
-On these moons what state of matter are the deepest parts of the ocean in?
+
+Q
+What state of matter are the deepest parts of the moon's ocean in?
 
 OPTS
 A) Solid 
@@ -292,6 +414,125 @@ A) It may indicate the planet is too cold and inhospitable
 B) It may indicate the planet contains frozen deserts
 C) It may indicate chemically active subsurface oceans
 D) It indicates an increase in surface temperature permanently
+
+ANS
+C
+###
+Cryovolcanism has also been proposed as an explanation for certain surface features on Neptune’s moon Triton. During a flyby mission, scientists observed dark streaks extending across the moon’s icy surface. These markings are thought to have been produced by geyser-like eruptions of nitrogen gas that carried darker particles upward before depositing them downwind.
+
+Q
+What do the cryovolcanic eruptions resemble?
+
+OPTS
+A) Waterfall
+B) Clouds
+C) Crystals
+D) Geyser
+
+ANS
+D
+###
+TEXT
+In contrast to silicate volcanism on Earth, cryovolcanic eruptions typically occur at far lower temperatures and involve materials that behave differently under reduced gravity conditions. The viscosity of the erupting substances, as well as the structural properties of the surrounding ice, can influence the shape and extent of resulting surface formations.
+
+Q
+Compared to earth’s moon, what temperature are the moons which experience cryovolcanism?
+
+OPTS
+A) Much colder
+B) About the same
+C) Much warmer
+D) They are unknown
+
+ANS
+A
+###
+TEXT
+Magnetotactic bacteria are a diverse group of microorganisms that orient and navigate along magnetic field lines using specialized intracellular structures known as magnetosomes. These bacteria are typically found in aquatic environments, particularly in sediments where oxygen concentrations vary sharply over short distances. 
+
+Q
+Where are Magnetotactic bacteria found?
+
+OPTS
+A) In algae
+B) In sediment
+C) In coral reefs
+D) In rivers
+
+ANS
+B
+###
+TEXT
+The bacteria’s ability to align with Earth’s magnetic field allows them to efficiently locate optimal zones within the water column or sediment layers. Magnetosomes consist of membrane-bound crystals composed primarily of either magnetite or greigite. 
+
+Q
+Why do magnetosomes contain magnetite or greigite?
+
+OPTS
+A) These minerals feed the bacteria
+B) These minerals form a hard shell
+C) These minerals are magnetic
+D) These minerals don’t dissolve in water
+
+ANS
+C
+###
+TEXT
+Magnetite crystals are arranged in linear chains within the bacterial cell, forming structures that behave collectively as a single magnetic dipole. This internal compass enables the bacterium to reduce random motion and instead move in a directed manner along geomagnetic field lines, a behavior referred to as magnetotaxis.
+
+Q
+How do the bacteria decide where to go?
+
+OPTS
+A) They follow geomagnetic field lines
+B) They follow the scent of their prey
+C) They follow the ocean waves
+D) They follow other bacteria
+
+ANS
+A
+###
+TEXT
+The movement facilitated by magnetotaxis is often coupled with aerotaxis, the tendency of organisms to move toward or away from oxygen. In many cases, magnetotactic bacteria use magnetic alignment to travel downward into microaerobic or anaerobic environments where oxygen levels are low but not entirely absent. 
+
+Q
+What oxygen conditions do the bacteria prefer?
+
+OPTS
+A) No oxygen
+B) Low oxygen 
+C) Medium oxygen
+D) High oxygen
+
+ANS
+B
+###
+TEXT
+This directed migration enhances their survival by minimizing exposure to conditions that are either too oxidizing or completely devoid of oxygen. Magnetotactic behavior is particularly advantageous in stratified aquatic environments, where chemical gradients can fluctuate rapidly. 
+
+Q
+Why do the bacteria migrate?
+
+OPTS
+A) To avoid drying out on land
+B) To avoid predation
+C) To avoid hot water vents
+D) To avoid harsh chemical conditions
+
+ANS
+D
+###
+TEXT
+By orienting along vertical magnetic field lines, these bacteria are able to traverse sediment layers more directly than would be possible through undirected swimming alone. This reduces the time and energy required to locate suitable ecological niches. The study of magnetotactic bacteria thus provides insight into how microorganisms adapt to complex physical environments and exploit physical forces such as magnetism to enhance their survival and efficiency.
+
+Q
+What can be learned from magnetotactic bacteria?
+
+OPTS
+A) Gravitational effects on bacteria
+B) Undirected swimming in bacteria
+C) Survival adaptations of bacteria
+D) The magnetic properties of neurons
 
 ANS
 C
