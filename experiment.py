@@ -612,13 +612,14 @@ class Experiment:
         text_rect = text_surf.get_rect()
         text_rect.y = int(screen_rect.centery - baseline)
         
+        if has_bold:
+            bold_center_x = (x_positions[word_bold_start] + x_positions[word_bold_end]) / 2
+            text_rect.x = int(screen_rect.centerx - bold_center_x)
+        else:
+            text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
+        
         # DO NOT CENTER WHEN MIDDLE BOLD 
-        # if has_bold:
-        #     bold_center_x = (x_positions[word_bold_start] + x_positions[word_bold_end]) / 2
-        #     text_rect.x = int(screen_rect.centerx - bold_center_x)
-        # else:
-        #     text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
-        text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
+        # text_rect.x = int(screen_rect.centerx - text_rect.width / 2)
         surf.blit(text_surf, text_rect)
 
     # ── logging ───────────────────────────────────────────────────────────
