@@ -62,7 +62,7 @@ CONFIG = {
     "questions_file": "questions.txt",
     
     # HARD CODED PASSAGE / QUESTION VALUES
-    "num_passages": 5,
+    "num_passages": 9,
     "questions_per_passage": 4,   
     "shuffle_passages": True,
 
