@@ -418,6 +418,7 @@ D) It indicates an increase in surface temperature permanently
 ANS
 C
 ###
+TEXT
 Cryovolcanism has also been proposed as an explanation for certain surface features on Neptune’s moon Triton. During a flyby mission, scientists observed dark streaks extending across the moon’s icy surface. These markings are thought to have been produced by geyser-like eruptions of nitrogen gas that carried darker particles upward before depositing them downwind.
 
 Q
