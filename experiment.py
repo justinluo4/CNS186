@@ -62,8 +62,8 @@ CONFIG = {
     "questions_file": "questions.txt",
     
     # HARD CODED PASSAGE / QUESTION VALUES
-    "num_passages": 9,
-    "questions_per_passage": 4,   
+    "num_passages": 6,
+    "questions_per_passage": 6,   
     "shuffle_passages": True,
 
     # ── Conditions (one Bayesian estimator each) ──────────────────────────
