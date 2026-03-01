@@ -1024,6 +1024,6 @@ class Experiment:
 
 if __name__ == "__main__":
     pygame.init()
-    questions = load_questions(CONFIG["questions_file"])
+    questions = load_questions(CONFIG["questions_file"], questions_per_passage=CONFIG["questions_per_passage"])
     experiment = Experiment(questions=questions, config=CONFIG)
     experiment.run()
