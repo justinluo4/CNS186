@@ -70,7 +70,7 @@ CONFIG = {
     # bold_proportion = [start_frac, end_frac] of each word's characters to bold.
     # None = no bolding (baseline).  [0.0, 0.5] = first 50 % of every word.
     "conditions": [
-#        {"id": "no_bold", "label": "No bold (baseline)", "bold_proportion": None},
+        {"id": "no_bold", "label": "No bold (baseline)", "bold_proportion": None},
         {"id": "bio_start",  "label": "Bionic start 30 %",        "bold_proportion": [0.0, 0.30]},
         {"id": "bio_middle",  "label": "Bionic middle 30 %",        "bold_proportion": [0.35, 0.65]},
         # {"id": "bio_end",  "label": "Bionic end 30 %",        "bold_proportion": [0.7, 1.0]},
