@@ -18,7 +18,7 @@ TEXT
 However, subsequent examination revealed a dense internal arrangement of interlocking gears, suggesting that the object had once functioned as a complex mechanical instrument. The shipwreck itself is believed to date to the first century BCE, and inscriptions on the mechanism indicate that it was likely constructed during the Hellenistic period.
 
 Q
-What do the interlocking gears imply their its creators?
+What do the interlocking gears imply about its creators?
 
 OPTS
 A) They lacked astronomical knowledge
@@ -197,13 +197,13 @@ TEXT
 It possesses a horse-like body, a long prehensile tongue similar to that of a giraffe, and distinctive zebra-like stripes on its hindquarters and legs. Despite its unusual appearance, the okapi is not closely related to zebras at all. Instead, it is the only living relative of the giraffe. For centuries, the okapi remained unknown to scientists outside central Africa, although local communities were well aware of its existence. 
 
 Q
-Why might the okapi have stripes on its hindquarters and legs?
+Why might the okapi have been largely unknown to scientists?
 
 OPTS
-A) To match the look of zebras and blend in with their herds
-B) To camouflage with the rainforest vegetation 
+A) It matches the look of zebras and blend in with their herds
+B) It was able to camouflage with the rainforest vegetation 
 C) I don't know
-D) To blend in with the grasses in its habitat
+D) It blends in with the grasses in its habitat
 
 ANS
 B
@@ -227,13 +227,13 @@ TEXT
 Unlike giraffes, which inhabit savannas and rely on height to browse leaves from tall trees, okapis are adapted to life in dense forest environments. Their relatively short necks and compact bodies allow them to move easily through thick vegetation. The stripes on their hind legs may serve as a form of camouflage, helping blend in with the filtered light patterns on the forest floor.
 
 Q
-Why may okapis have become endangered?
+Relative to giraffes, okapis are __?
 
 OPTS
 A) I don't know
-B) Since okapis are short they cannot escape predators fast
-C) Okapis are not well liked and therefore can’t raise money in zoos
-D) The only rainforests which okapi inhabit are being logged 
+B) Taller
+C) About the same height
+D) Shorter
 
 ANS
 D
